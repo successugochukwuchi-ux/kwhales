@@ -1,0 +1,92 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ product.name }} - Online Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
+        <div>
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                 style="width: 100%; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        </div>
+        <div>
+            <h1 style="color: var(--secondary-color); margin-bottom: 1rem;">{{ product.name }}</h1>
+            <p style="color: #666; margin-bottom: 1rem;">Category: {{ product.category.name }}</p>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <div class="product-price" style="font-size: 2rem;">
+                    ${{ product.price }}
+                    {% if product.has_discount %}
+                        <span class="original-price" style="font-size: 1.5rem; margin-left: 1rem;">
+                            ${{ product.discounted_price|floatformat:2 }}
+                        </span>
+                        <span style="background: var(--primary-color); color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">
+                            SALE
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <p style="margin-bottom: 1.5rem; line-height: 1.8;">{{ product.description }}</p>
+            
+            <p style="margin-bottom: 1.5rem;">
+                <strong>Availability:</strong> 
+                {% if product.stock > 0 %}
+                    <span style="color: green;">In Stock ({{ product.stock }} available)</span>
+                {% else %}
+                    <span style="color: red;">Out of Stock</span>
+                {% endif %}
+            </p>
+            
+            {% if product.stock > 0 %}
+            <form method="post" action="{% url 'add_to_cart' %}" style="display: flex; gap: 1rem; align-items: center;">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" 
+                       class="form-control" style="width: 80px;">
+                <button type="submit" class="btn">Add to Cart</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if related_products %}
+    <section>
+        <h2 style="color: var(--secondary-color); margin-bottom: 1.5rem;">Related Products</h2>
+        <div class="product-grid">
+            {% for related in related_products %}
+            <div class="product-card">
+                <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">{{ related.name }}</h3>
+                    <div class="product-price">${{ related.price }}</div>
+                    <a href="{% url 'product_detail' related.slug %}" class="btn btn-secondary" 
+                       style="width: 100%; text-align: center; display: block; margin-top: 0.5rem;">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    {% if reviews %}
+    <section style="margin-top: 3rem;">
+        <h2 style="color: var(--secondary-color); margin-bottom: 1.5rem;">Customer Reviews</h2>
+        {% for review in reviews %}
+        <div style="background: var(--light-gray); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <strong>{{ review.get_reviewer_name }}</strong>
+                <span style="color: var(--primary-color);">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            <h4 style="margin-bottom: 0.5rem;">{{ review.title }}</h4>
+            <p>{{ review.comment }}</p>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

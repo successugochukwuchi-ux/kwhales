@@ -1,0 +1,73 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Order Confirmation - Online Store{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align: center; padding: 3rem;">
+    <div style="background: #d4edda; color: #155724; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h1 style="color: var(--secondary-color); margin-bottom: 1rem;">Thank You for Your Order!</h1>
+        <p style="font-size: 1.2rem;">Your order has been placed successfully.</p>
+    </div>
+    
+    <div style="background: var(--light-gray); padding: 2rem; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;">
+        <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Order Details</h2>
+        <p><strong>Order Number:</strong> #{{ order.id }}</p>
+        <p><strong>Date:</strong> {{ order.created_at|date:"F d, Y H:i" }}</p>
+        <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+        
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+        
+        <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Customer Information</h3>
+        <p><strong>Name:</strong> {{ order.get_customer_name }}</p>
+        <p><strong>Email:</strong> {{ order.guest_email }}</p>
+        <p><strong>Phone:</strong> {{ order.phone }}</p>
+        
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+        
+        <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Shipping Address</h3>
+        <p>{{ order.shipping_address|linebreaks }}</p>
+        
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+        
+        <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Order Items</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: white;">
+                    <th style="padding: 0.5rem; text-align: left;">Product</th>
+                    <th style="padding: 0.5rem; text-align: center;">Qty</th>
+                    <th style="padding: 0.5rem; text-align: right;">Price</th>
+                    <th style="padding: 0.5rem; text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 0.5rem;">{{ item.product.name }}</td>
+                    <td style="padding: 0.5rem; text-align: center;">{{ item.quantity }}</td>
+                    <td style="padding: 0.5rem; text-align: right;">${{ item.price }}</td>
+                    <td style="padding: 0.5rem; text-align: right;">${{ item.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="padding: 0.5rem; text-align: right; font-weight: bold;">Total:</td>
+                    <td style="padding: 0.5rem; text-align: right; font-weight: bold; color: var(--primary-color);">
+                        ${{ order.final_amount|floatformat:2 }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        {% if order.notes %}
+        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid #ddd;">
+        <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Order Notes</h3>
+        <p>{{ order.notes }}</p>
+        {% endif %}
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'product_list' %}" class="btn">Continue Shopping</a>
+    </div>
+</div>
+{% endblock %}

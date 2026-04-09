@@ -1,0 +1,87 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Shopping Cart - Online Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="color: var(--secondary-color); margin-bottom: 2rem;">Shopping Cart</h1>
+    
+    {% if cart_items %}
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+        <div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: var(--light-gray);">
+                        <th style="padding: 1rem; text-align: left;">Product</th>
+                        <th style="padding: 1rem;">Price</th>
+                        <th style="padding: 1rem;">Quantity</th>
+                        <th style="padding: 1rem;">Subtotal</th>
+                        <th style="padding: 1rem;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" 
+                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                <span>{{ item.product.name }}</span>
+                            </div>
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">${{ item.product.price }}</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <form method="post" action="{% url 'update_cart' %}" style="display: flex; justify-content: center;">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" 
+                                       max="{{ item.product.stock }}" class="form-control" 
+                                       style="width: 60px; padding: 5px;" onchange="this.form.submit()">
+                            </form>
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">${{ item.subtotal|floatformat:2 }}</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            <form method="post" action="{% url 'remove_from_cart' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <button type="submit" class="btn" 
+                                        style="background: #dc3545; padding: 5px 10px; font-size: 0.8rem;">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div>
+            <div style="background: var(--light-gray); padding: 1.5rem; border-radius: 8px;">
+                <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Order Summary</h2>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Subtotal:</span>
+                    <span>${{ total|floatformat:2 }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span>Shipping:</span>
+                    <span>Calculated at checkout</span>
+                </div>
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 1.2rem; font-weight: bold;">
+                    <span>Total:</span>
+                    <span>${{ total|floatformat:2 }}</span>
+                </div>
+                <a href="{% url 'checkout' %}" class="btn" style="width: 100%; text-align: center;">Proceed to Checkout</a>
+                <a href="{% url 'product_list' %}" class="btn btn-secondary" 
+                   style="width: 100%; text-align: center; display: block; margin-top: 0.5rem;">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <div style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.2rem; color: #666; margin-bottom: 1.5rem;">Your cart is empty.</p>
+        <a href="{% url 'product_list' %}" class="btn">Start Shopping</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
