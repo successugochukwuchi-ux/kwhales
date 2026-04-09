@@ -1,0 +1,79 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Home - Online Store{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Our Online Store</h1>
+    <p>Discover amazing products at great prices</p>
+    <br>
+    <a href="{% url 'product_list' %}" class="btn">Shop Now</a>
+</div>
+
+<div class="container">
+    {% if featured_products %}
+    <section>
+        <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Featured Products</h2>
+        <div class="product-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-price">
+                        ${{ product.price }}
+                        {% if product.has_discount %}
+                            <span class="original-price">${{ product.discounted_price|floatformat:2 }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-secondary" style="width: 100%; text-align: center;">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if latest_products %}
+    <section style="margin-top: 3rem;">
+        <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Latest Products</h2>
+        <div class="product-grid">
+            {% for product in latest_products %}
+            <div class="product-card">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-price">
+                        ${{ product.price }}
+                        {% if product.has_discount %}
+                            <span class="original-price">${{ product.discounted_price|floatformat:2 }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'product_detail' product.slug %}" class="btn btn-secondary" style="width: 100%; text-align: center;">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if categories %}
+    <section style="margin-top: 3rem;">
+        <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Browse by Category</h2>
+        <div class="product-grid">
+            {% for category in categories %}
+            <div class="product-card">
+                <div class="product-info" style="text-align: center; padding: 2rem;">
+                    <h3 class="product-name">{{ category.name }}</h3>
+                    {% if category.description %}
+                    <p style="color: #666; margin-bottom: 1rem;">{{ category.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    <a href="{% url 'product_list' %}?category={{ category.slug }}" class="btn">Browse</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Checkout - Online Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="color: var(--secondary-color); margin-bottom: 2rem;">Checkout</h1>
+    
+    <form method="post" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        {% csrf_token %}
+        
+        <div>
+            <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Contact Information</h2>
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="first_name">First Name *</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name *</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" class="form-control" required>
+            </div>
+            
+            <h2 style="color: var(--secondary-color); margin: 2rem 0 1rem;">Shipping Address</h2>
+            <div class="form-group">
+                <label for="shipping_address">Address *</label>
+                <textarea id="shipping_address" name="shipping_address" class="form-control" rows="3" required></textarea>
+            </div>
+            
+            <h2 style="color: var(--secondary-color); margin: 2rem 0 1rem;">Billing Address</h2>
+            <div class="form-group">
+                <label for="billing_address">Address *</label>
+                <textarea id="billing_address" name="billing_address" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" onclick="copyAddress()"> Same as shipping address
+                </label>
+            </div>
+        </div>
+        
+        <div>
+            <h2 style="color: var(--secondary-color); margin-bottom: 1rem;">Order Summary</h2>
+            <div style="background: var(--light-gray); padding: 1.5rem; border-radius: 8px;">
+                {% for item in cart_items %}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #ddd;">
+                    <span>{{ item.product.name }} x {{ item.quantity }}</span>
+                    <span>${{ item.subtotal|floatformat:2 }}</span>
+                </div>
+                {% endfor %}
+                <hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold;">
+                    <span>Total:</span>
+                    <span>${{ total|floatformat:2 }}</span>
+                </div>
+            </div>
+            
+            <h2 style="color: var(--secondary-color); margin: 2rem 0 1rem;">Additional Notes</h2>
+            <div class="form-group">
+                <label for="notes">Order Notes (Optional)</label>
+                <textarea id="notes" name="notes" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%; margin-top: 2rem;">Place Order</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function copyAddress() {
+    const shipping = document.getElementById('shipping_address');
+    const billing = document.getElementById('billing_address');
+    if (document.querySelector('input[onclick="copyAddress()"]').checked) {
+        billing.value = shipping.value;
+    }
+}
+</script>
+{% endblock %}

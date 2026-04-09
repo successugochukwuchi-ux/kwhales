@@ -1,0 +1,34 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Categories - Online Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="color: var(--secondary-color); margin-bottom: 2rem;">Browse Categories</h1>
+    
+    {% if categories %}
+    <div class="product-grid">
+        {% for category in categories %}
+        <div class="product-card">
+            {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="product-image">
+            {% else %}
+            <div style="height: 250px; background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); display: flex; align-items: center; justify-content: center;">
+                <span style="color: white; font-size: 3rem; font-weight: bold;">{{ category.name|first }}</span>
+            </div>
+            {% endif %}
+            <div class="product-info" style="text-align: center;">
+                <h3 class="product-name">{{ category.name }}</h3>
+                {% if category.description %}
+                <p style="color: #666; margin-bottom: 1rem;">{{ category.description|truncatewords:15 }}</p>
+                {% endif %}
+                <a href="{% url 'product_list' %}?category={{ category.slug }}" class="btn">Browse Products</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align: center; padding: 3rem; color: #666;">No categories available.</p>
+    {% endif %}
+</div>
+{% endblock %}
